@@ -1,0 +1,1145 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Biblioteca Virtual - Detectives Y Rebeldes Literarios</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: "Inter", sans-serif;
+    background: linear-gradient(135deg, #a8e6a3 0%, #d4f1d0 30%, #e8f8e6 70%, #f1f8e9 100%);
+    color: #2e5d22;
+    position: relative;
+    overflow-x: hidden;
+    min-height: 100vh;
+  }
+
+  /* Loader simplificado */
+  .page-loader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #4caf50, #66bb6a);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease-out;
+  }
+  
+  .loader-book {
+    position: relative;
+    width: 60px;
+    height: 45px;
+    animation: bookFlip 1.5s infinite ease-in-out;
+  }
+  
+  .loader-page {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, #fff, #f0f0f0);
+    border-radius: 3px;
+    transform-origin: left center;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.2);
+  }
+  
+  @keyframes bookFlip {
+    0%, 20% { transform: rotateY(0deg); }
+    50% { transform: rotateY(-180deg); }
+    80%, 100% { transform: rotateY(-360deg); }
+  }
+  
+  .loader-text {
+    margin-top: 20px;
+    color: white;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+
+  /* Header optimizado */
+  header {
+    background: linear-gradient(135deg, #2e7d32 0%, #4caf50 50%, #66bb6a 100%);
+    text-align: center;
+    padding: 30px 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+  }
+  
+  header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    animation: shimmer 3s infinite;
+  }
+  
+  @keyframes shimmer {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+  
+  .header-title {
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    color: white;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 3;
+    margin-bottom: 8px;
+  }
+  
+  .header-subtitle {
+    font-size: clamp(0.9rem, 2vw, 1.1rem);
+    color: rgba(255,255,255,0.95);
+    font-weight: 500;
+    position: relative;
+    z-index: 3;
+  }
+
+  /* Botón de regreso */
+  .btn-back {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    color: white;
+    border: 2px solid rgba(255,255,255,0.3);
+    padding: 10px 20px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    z-index: 4;
+  }
+  
+  .btn-back:hover {
+    background: rgba(255,255,255,0.3);
+    transform: translateY(-50%) translateX(-5px);
+  }
+
+  /* Búsqueda y filtros */
+  .search-section {
+    max-width: 1200px;
+    margin: 25px auto;
+    padding: 0 15px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .search-box {
+    flex: 1;
+    min-width: 280px;
+    max-width: 450px;
+    position: relative;
+  }
+  
+  .search-input {
+    width: 100%;
+    padding: 12px 45px 12px 20px;
+    border: none;
+    border-radius: 25px;
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255,255,255,0.4);
+    font-size: 0.95rem;
+    font-weight: 500;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+    color: #2e5d22;
+  }
+  
+  .search-input::placeholder {
+    color: rgba(46, 93, 34, 0.6);
+  }
+  
+  .search-input:focus {
+    outline: none;
+    background: rgba(255,255,255,0.9);
+    box-shadow: 0 10px 30px rgba(76, 175, 80, 0.3);
+    transform: translateY(-2px);
+    border-color: rgba(76, 175, 80, 0.5);
+  }
+  
+  .search-icon {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 1.1rem;
+    color: #4caf50;
+  }
+  
+  .filter-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  
+  .filter-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.7);
+    border: 2px solid rgba(255,255,255,0.4);
+    color: #2e7d32;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .filter-btn:hover, .filter-btn.active {
+    background: linear-gradient(135deg, #4caf50, #66bb6a);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+    border-color: transparent;
+  }
+
+  /* Colores para géneros */
+  .genre-clasico { background: linear-gradient(135deg, #2e7d32, #4caf50) !important; }
+  .genre-novela { background: linear-gradient(135deg, #689f38, #8bc34a) !important; }
+  .genre-drama { background: linear-gradient(135deg, #5d4037, #795548) !important; }
+  .genre-aventura { background: linear-gradient(135deg, #f57c00, #ff9800) !important; }
+  .genre-misterio { background: linear-gradient(135deg, #512da8, #673ab7) !important; }
+
+  /* Grid de libros */
+  .books-container {
+    max-width: 1300px;
+    margin: 30px auto;
+    padding: 0 15px;
+  }
+  
+  .books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 25px;
+    padding: 20px 0;
+  }
+
+  /* Tarjetas de libros optimizadas */
+  .book-card {
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(15px);
+    border-radius: 20px;
+    border: 2px solid rgba(255,255,255,0.3);
+    padding: 18px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+    animation: cardSlideIn 0.6s ease-out forwards;
+  }
+  
+  .book-card:nth-child(1) { animation-delay: 0.1s; }
+  .book-card:nth-child(2) { animation-delay: 0.15s; }
+  .book-card:nth-child(3) { animation-delay: 0.2s; }
+  .book-card:nth-child(4) { animation-delay: 0.25s; }
+  .book-card:nth-child(5) { animation-delay: 0.3s; }
+  .book-card:nth-child(6) { animation-delay: 0.35s; }
+  .book-card:nth-child(7) { animation-delay: 0.4s; }
+  .book-card:nth-child(8) { animation-delay: 0.45s; }
+  
+  @keyframes cardSlideIn {
+    0% {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .book-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s;
+  }
+  
+  .book-card:hover::before {
+    left: 100%;
+  }
+  
+  .book-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+    background: rgba(255,255,255,0.3);
+  }
+  
+  /* Portadas con efecto 3D ligero */
+  .book-cover-container {
+    position: relative;
+    margin-bottom: 15px;
+    perspective: 800px;
+  }
+  
+  .book-cover {
+    width: 140px;
+    height: 190px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    transition: all 0.4s ease;
+    position: relative;
+  }
+  
+  .book-cover::after {
+    content: '';
+    position: absolute;
+    top: 3px;
+    left: -5px;
+    width: 140px;
+    height: 190px;
+    background: linear-gradient(135deg, rgba(0,0,0,0.2), rgba(0,0,0,0.1));
+    border-radius: 12px;
+    z-index: -1;
+  }
+  
+  .book-card:hover .book-cover {
+    transform: rotateY(-8deg) scale(1.05);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+  }
+  
+  /* Tipografía optimizada */
+  .book-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #2e7d32;
+    margin-bottom: 6px;
+    line-height: 1.3;
+    font-family: 'Playfair Display', serif;
+  }
+  
+  .book-author {
+    font-size: 0.85rem;
+    color: #4a7c59;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  
+  .rating {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+  }
+  
+  .star {
+    color: #ffc107;
+    font-size: 0.8rem;
+  }
+  
+  .star.empty {
+    color: rgba(255, 193, 7, 0.3);
+  }
+  
+  .rating-number {
+    margin-left: 6px;
+    font-weight: 600;
+    color: #4a7c59;
+    font-size: 0.8rem;
+  }
+  
+  .book-genre {
+    display: inline-block;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 15px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Modal optimizado */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(8px);
+    z-index: 2000;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+  }
+  
+  .modal-content {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(20px);
+    border: 2px solid rgba(255,255,255,0.2);
+    border-radius: 25px;
+    padding: 30px;
+    max-width: 700px;
+    width: 100%;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    animation: modalSlideIn 0.4s ease-out;
+  }
+  
+  @keyframes modalSlideIn {
+    0% {
+      opacity: 0;
+      transform: scale(0.9) translateY(30px);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+  
+  .modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    background: rgba(255,255,255,0.2);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    font-size: 1.3rem;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .modal-close:hover {
+    background: rgba(244, 67, 54, 0.2);
+    color: #f44336;
+    transform: scale(1.1);
+  }
+  
+  .modal-book-info {
+    display: flex;
+    gap: 25px;
+    margin-bottom: 25px;
+  }
+  
+  .modal-cover {
+    width: 160px;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+  }
+  
+  .modal-details h2 {
+    color: white;
+    font-size: 1.6rem;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  
+  .modal-details .author {
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+  }
+  
+  .modal-details .genre-year {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  
+  .modal-details .genre,
+  .modal-details .year {
+    color: white;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+  }
+  
+  .synopsis {
+    line-height: 1.6;
+    color: white;
+    margin-bottom: 25px;
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 15px;
+  }
+  
+  .synopsis h3 {
+    color: white;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    font-family: 'Playfair Display', serif;
+  }
+  
+  .synopsis p {
+    font-size: 0.95rem;
+  }
+  
+  .btn-read {
+    background: linear-gradient(135deg, #4caf50, #66bb6a);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 25px rgba(76, 175, 80, 0.3);
+  }
+  
+  .btn-read:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 35px rgba(76, 175, 80, 0.4);
+  }
+
+  /* Canvas simplificado */
+  #fondoCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    opacity: 0.3;
+  }
+
+  /* Partículas ligeras */
+  .magic-particle {
+    position: fixed;
+    width: 4px;
+    height: 4px;
+    background: radial-gradient(circle, #4caf50, transparent);
+    border-radius: 50%;
+    pointer-events: none;
+    animation: magicFloat 2s ease-out forwards;
+    z-index: 1500;
+  }
+  
+  @keyframes magicFloat {
+    0% {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: scale(0) translateY(-80px);
+    }
+  }
+
+  /* Responsive optimizado */
+  @media (max-width: 1024px) {
+    .books-grid {
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    }
+    
+    .book-cover {
+      width: 120px;
+      height: 170px;
+    }
+    
+    .book-title {
+      font-size: 0.9rem;
+    }
+    
+    .book-author {
+      font-size: 0.8rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .header-title {
+      font-size: 2rem;
+    }
+    
+    .header-subtitle {
+      font-size: 0.9rem;
+    }
+    
+    .search-section {
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .search-box {
+      min-width: 100%;
+    }
+    
+    .books-grid {
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+    }
+    
+    .book-cover {
+      width: 110px;
+      height: 150px;
+    }
+    
+    .book-title {
+      font-size: 0.85rem;
+    }
+    
+    .book-author {
+      font-size: 0.75rem;
+    }
+    
+    .modal-book-info {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    
+    .modal-cover {
+      width: 140px;
+      height: 190px;
+    }
+    
+    .modal-details h2 {
+      font-size: 1.4rem;
+    }
+    
+    .modal-details .author {
+      font-size: 1rem;
+    }
+    
+    .btn-back {
+      position: static;
+      transform: none;
+      margin-bottom: 15px;
+    }
+    
+    .synopsis p {
+      font-size: 0.9rem;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .books-grid {
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    }
+    
+    .book-cover {
+      width: 100px;
+      height: 135px;
+    }
+    
+    .book-title {
+      font-size: 0.8rem;
+    }
+    
+    .book-author {
+      font-size: 0.7rem;
+    }
+    
+    .modal-content {
+      padding: 20px;
+      margin: 10px;
+    }
+    
+    .modal-cover {
+      width: 120px;
+      height: 160px;
+    }
+    
+    .filter-btn {
+      font-size: 0.8rem;
+      padding: 6px 12px;
+    }
+  }
+
+  /* Performance optimizations */
+  .book-card {
+    will-change: transform;
+  }
+  
+  .book-cover {
+    will-change: transform;
+  }
+  
+  .modal-content {
+    will-change: transform, opacity;
+  }
+</style>
+</head>
+<body>
+<!-- Loader simplificado -->
+<div class="page-loader" id="pageLoader">
+  <div>
+    <div class="loader-book">
+      <div class="loader-page"></div>
+      <div class="loader-page"></div>
+      <div class="loader-page"></div>
+    </div>
+    <div class="loader-text">Cargando biblioteca...</div>
+  </div>
+</div>
+
+<canvas id="fondoCanvas"></canvas>
+
+<header>
+  <a href="https://whitheitsblak.github.io/Detectives-Y-Reveldes-Literarios/" class="btn-back">← Regresar</a>
+  <h1 class="header-title">
+    📚 Biblioteca Virtual 📚
+  </h1>
+  <p class="header-subtitle">Descubre mundos infinitos a través de la lectura</p>
+</header>
+
+<div class="search-section">
+  <div class="search-box">
+    <input type="text" class="search-input" id="searchInput" placeholder="Buscar por título o autor...">
+    <span class="search-icon">🔍</span>
+  </div>
+  <div class="filter-buttons">
+    <button class="filter-btn active" data-genre="todos">Todos</button>
+    <button class="filter-btn" data-genre="clasico">Clásicos</button>
+    <button class="filter-btn" data-genre="novela">Novela</button>
+    <button class="filter-btn" data-genre="drama">Drama</button>
+    <button class="filter-btn" data-genre="aventura">Aventura</button>
+    <button class="filter-btn" data-genre="misterio">Misterio</button>
+  </div>
+</div>
+
+<div class="books-container">
+  <div class="books-grid" id="booksGrid">
+    <!-- Los libros se cargarán aquí -->
+  </div>
+</div>
+
+<!-- Modal optimizado -->
+<div class="modal-overlay" id="bookModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="closeModal()">&times;</button>
+    <div class="modal-book-info">
+      <img class="modal-cover" id="modalCover" src="" alt="">
+      <div class="modal-details">
+        <h2 id="modalTitle"></h2>
+        <div class="author" id="modalAuthor"></div>
+        <div class="genre-year">
+          <span class="genre" id="modalGenre"></span>
+          <span class="year" id="modalYear"></span>
+        </div>
+      </div>
+    </div>
+    <div class="synopsis">
+      <h3>📖 Sinopsis</h3>
+      <p id="modalSynopsis"></p>
+    </div>
+    <button class="btn-read" id="btnRead" onclick="openBook()">
+      📖 Leer Libro
+    </button>
+  </div>
+</div>
+
+<script>
+// Base de datos optimizada
+const books = [
+  {
+    id: 1,
+    title: "Lazarillo de Tormes",
+    author: "Anónimo",
+    genre: "clasico",
+    year: "1554",
+    rating: 4.2,
+    cover: "https://i.ibb.co/Xx6XJ0L4/images.jpg",
+    synopsis: "Primera novela picaresca de la literatura española que narra las aventuras de Lázaro, un joven pícaro que sirve a diferentes amos para sobrevivir. Una obra satírica que critica la sociedad del siglo XVI español con humor e ironía, mostrando la lucha por la supervivencia en una época de contrastes sociales.",
+    pdfUrl: "https://drive.google.com/file/d/1LkdOy13tJmlahuxAlXcbUtMV5P2Iolr3/view?usp=drive_link"
+  },
+  {
+    id: 2,
+    title: "Don Quijote de la Mancha",
+    author: "Miguel de Cervantes",
+    genre: "clasico",
+    year: "1605",
+    rating: 4.8,
+    cover: "https://i.ibb.co/23zLLf37/PORTADA-QUIJOTE-scaled-1.jpg",
+    synopsis: "La historia del ingenioso hidalgo Don Quijote y su fiel escudero Sancho Panza. Una obra cumbre de la literatura universal que explora la realidad y la fantasía, los ideales y la locura, con humor y profundidad extraordinarios. Considerada la primera novela moderna.",
+    pdfUrl: "https://drive.google.com/file/d/1zO9y6YfIUY_qIWVf5tPkun0EEDNEJEY3/view?usp=drive_link"
+  },
+  {
+    id: 3,
+    title: "Marianela",
+    author: "Benito Pérez Galdós",
+    genre: "novela",
+    year: "1878",
+    rating: 4.1,
+    cover: "https://i.ibb.co/wHFzknT/0f63575990f7a54b4ef55732983edbff.jpg",
+    synopsis: "La conmovedora historia de Marianela, una joven humilde que guía a Pablo, un ciego de nacimiento, por los senderos de las minas de Socartes. Una novela que explora temas como el amor, la belleza, la clase social y la crueldad del destino con el realismo característico de Galdós.",
+    pdfUrl: "https://drive.google.com/file/d/1m7Uxzrxf5Lvd-rA-mKku8ZDUuU48p7Zj/view?usp=drive_link"
+  },
+  {
+    id: 4,
+    title: "Rimas y Leyendas",
+    author: "Gustavo Adolfo Bécquer",
+    genre: "clasico",
+    year: "1871",
+    rating: 4.5,
+    cover: "https://i.ibb.co/DTx62Mq/rimas-y-leyendas-spanish-edition-edicion-espanola.jpg",
+    synopsis: "Colección de poemas y relatos que representa la cumbre del romanticismo español tardío. Las Rimas exploran el amor, la soledad y la creación poética, mientras que las Leyendas recrean un mundo misterioso y sobrenatural con extraordinaria belleza literaria.",
+    pdfUrl: "https://drive.google.com/file/d/11WhQYmyW9JiQgtsuES3GqJLCCW8qIHcy/view?usp=drive_link"
+  },
+  {
+    id: 5,
+    title: "Cantar de Mio Cid",
+    author: "Anónimo",
+    genre: "clasico",
+    year: "1200",
+    rating: 4.0,
+    cover: "https://i.ibb.co/N2KdS21P/visd-0001-JPG0-G5-QT.jpg",
+    synopsis: "El cantar de gesta más importante de la literatura española que narra las hazañas de Rodrigo Díaz de Vivar, el Cid Campeador. Una epopeya medieval que exalta valores como el honor, la lealtad y el amor familiar, siendo fundamental para entender la cultura medieval española.",
+    pdfUrl: "https://drive.google.com/file/d/1kkNew58fL-_CsDWxo2xFiXaAUG3Um0tj/view?usp=drive_link"
+  },
+  {
+    id: 6,
+    title: "La Celestina",
+    author: "Fernando de Rojas",
+    genre: "clasico",
+    year: "1499",
+    rating: 4.3,
+    cover: "https://i.ibb.co/M5Rwzmwg/8e2a2cc1c71dec024a2e67d763e95cc6-1.jpg",
+    synopsis: "Una obra fundamental del teatro español que narra la historia trágica de los jóvenes amantes Calisto y Melibea, cuyo amor es facilitado por la astuta alcahueta Celestina. Una tragicomedia que explora el amor, la codicia, la muerte y las pasiones humanas con extraordinaria profundidad psicológica.",
+    pdfUrl: "https://drive.google.com/file/d/15BSv45yvuiosrnl5EI9dIpyTv3RSzHvR/view?usp=drive_link"
+  },
+  {
+    id: 7,
+    title: "Prohibido Suicidarse en Primavera",
+    author: "Alejandro Casona",
+    genre: "drama",
+    year: "1937",
+    rating: 4.4,
+    cover: "https://i.ibb.co/ynYzVKwT/9789876131681-e5270b0b4f536fb08016462300795225-640-0.jpg",
+    synopsis: "Una obra teatral emotiva que transcurre en un hogar para personas con tendencias suicidas, donde el doctor Ariel intenta curar a sus huéspedes con amor y esperanza. Una reflexión profunda sobre la vida, la muerte y la capacidad humana de encontrar razones para vivir.",
+    pdfUrl: "https://drive.google.com/file/d/1EdmUMXyJrwU1zQj-o2Jhy2TiyQqFrzFg/view?usp=drive_link"
+  },
+  {
+    id: 8,
+    title: "Rebeldes",
+    author: "Susan E. Hinton",
+    genre: "novela",
+    year: "1967",
+    rating: 4.6,
+    cover: "https://i.ibb.co/3y3DD9Lb/images-1.jpg",
+    synopsis: "Una novela juvenil que narra la historia de Ponyboy Curtis y su pandilla, los Greasers, en su lucha contra las diferencias sociales y los conflictos con los Socs. Una obra conmovedora sobre la adolescencia, la lealtad, la familia y la búsqueda de identidad en un mundo dividido por clases sociales.",
+    pdfUrl: "https://drive.google.com/file/d/1ooPGL_rSsP1Xc1asLd_1jaqAHP6PH_WK/view?usp=drive_link"
+  }
+];
+
+let filteredBooks = [...books];
+let currentBook = null;
+
+// Inicialización optimizada
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(() => {
+    hideLoader();
+    renderBooks();
+    initializeSearch();
+    initializeFilters();
+    initCanvas();
+  }, 1200);
+});
+
+// Ocultar loader
+function hideLoader() {
+  const loader = document.getElementById('pageLoader');
+  loader.style.opacity = '0';
+  setTimeout(() => {
+    loader.style.display = 'none';
+  }, 500);
+}
+
+// Generar estrellitas optimizado
+function generateStars(rating) {
+  const fullStars = Math.floor(rating);
+  const hasHalfStar = rating % 1 !== 0;
+  const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+  
+  let starsHTML = '';
+  
+  for (let i = 0; i < fullStars; i++) {
+    starsHTML += '<span class="star">★</span>';
+  }
+  
+  if (hasHalfStar) {
+    starsHTML += '<span class="star">☆</span>';
+  }
+  
+  for (let i = 0; i < emptyStars; i++) {
+    starsHTML += '<span class="star empty">☆</span>';
+  }
+  
+  return `<div class="rating">${starsHTML} <span class="rating-number">${rating}</span></div>`;
+}
+
+// Renderizar libros optimizado
+function renderBooks() {
+  const grid = document.getElementById('booksGrid');
+  grid.innerHTML = '';
+  
+  filteredBooks.forEach((book, index) => {
+    const bookCard = document.createElement('div');
+    bookCard.className = 'book-card';
+    bookCard.style.animationDelay = `${index * 0.05}s`;
+    bookCard.onclick = () => openModal(book);
+    
+    const genreClass = `genre-${book.genre}`;
+    
+    bookCard.innerHTML = `
+      <div class="book-cover-container">
+        <img 
+          src="${book.cover}" 
+          alt="${book.title}" 
+          class="book-cover"
+          onerror="this.src='https://via.placeholder.com/140x190/4caf50/ffffff?text=${encodeURIComponent(book.title.substring(0, 10))}'">
+      </div>
+      <div class="book-title">${book.title}</div>
+      <div class="book-author">por ${book.author}</div>
+      ${generateStars(book.rating)}
+      <div class="book-genre ${genreClass}">${book.genre.toUpperCase()}</div>
+    `;
+    
+    grid.appendChild(bookCard);
+  });
+}
+
+// Búsqueda optimizada
+function initializeSearch() {
+  const searchInput = document.getElementById('searchInput');
+  let searchTimeout;
+  
+  searchInput.addEventListener('input', function() {
+    clearTimeout(searchTimeout);
+    const query = this.value.toLowerCase();
+    
+    searchTimeout = setTimeout(() => {
+      filteredBooks = books.filter(book => 
+        book.title.toLowerCase().includes(query) || 
+        book.author.toLowerCase().includes(query)
+      );
+      renderBooks();
+    }, 300);
+  });
+}
+
+// Filtros optimizados
+function initializeFilters() {
+  const filterButtons = document.querySelectorAll('.filter-btn');
+  filterButtons.forEach(btn => {
+    btn.addEventListener('click', function() {
+      filterButtons.forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      
+      const genre = this.dataset.genre;
+      if (genre === 'todos') {
+        filteredBooks = [...books];
+      } else {
+        filteredBooks = books.filter(book => book.genre === genre);
+      }
+      renderBooks();
+      createMagicEffect();
+    });
+  });
+}
+
+// Modal optimizado
+function openModal(book) {
+  currentBook = book;
+  const modal = document.getElementById('bookModal');
+  
+  document.getElementById('modalCover').src = book.cover;
+  document.getElementById('modalTitle').textContent = book.title;
+  document.getElementById('modalAuthor').textContent = `por ${book.author}`;
+  
+  const genreElement = document.getElementById('modalGenre');
+  const yearElement = document.getElementById('modalYear');
+  
+  genreElement.textContent = book.genre.toUpperCase();
+  genreElement.className = `genre genre-${book.genre}`;
+  yearElement.textContent = book.year;
+  yearElement.className = `year genre-${book.genre}`;
+  
+  document.getElementById('modalSynopsis').textContent = book.synopsis;
+  
+  modal.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  
+  createMagicEffect();
+}
+
+function closeModal() {
+  const modal = document.getElementById('bookModal');
+  modal.style.display = 'none';
+  document.body.style.overflow = 'auto';
+  currentBook = null;
+}
+
+function openBook() {
+  if (currentBook && currentBook.pdfUrl) {
+    window.open(currentBook.pdfUrl, '_blank');
+    createMagicEffect();
+  }
+}
+
+// Efectos ligeros
+function createMagicEffect() {
+  for (let i = 0; i < 8; i++) {
+    setTimeout(() => {
+      createMagicParticle();
+    }, i * 50);
+  }
+}
+
+function createMagicParticle() {
+  const particle = document.createElement('div');
+  particle.className = 'magic-particle';
+  particle.style.left = Math.random() * window.innerWidth + 'px';
+  particle.style.top = Math.random() * window.innerHeight + 'px';
+  
+  document.body.appendChild(particle);
+  
+  setTimeout(() => {
+    if (particle.parentNode) particle.parentNode.removeChild(particle);
+  }, 2000);
+}
+
+// Canvas optimizado
+function initCanvas() {
+  const canvas = document.getElementById("fondoCanvas");
+  const ctx = canvas.getContext("2d");
+  let width, height;
+
+  const colors = [
+    "rgba(76, 175, 80, 0.4)",
+    "rgba(102, 187, 106, 0.3)", 
+    "rgba(129, 199, 132, 0.4)",
+    "rgba(165, 214, 167, 0.3)"
+  ];
+  const particles = [];
+
+  function resize() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+  }
+
+  class Particle {
+    constructor() {
+      this.x = Math.random() * width;
+      this.y = Math.random() * height;
+      this.radius = Math.random() * 2 + 1;
+      this.color = colors[Math.floor(Math.random() * colors.length)];
+      this.speedX = (Math.random() - 0.5) * 0.3;
+      this.speedY = (Math.random() - 0.5) * 0.3;
+      this.opacity = Math.random() * 0.4 + 0.2;
+    }
+    
+    move() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+      
+      if (this.x > width) this.x = 0;
+      if (this.x < 0) this.x = width;
+      if (this.y > height) this.y = 0;
+      if (this.y < 0) this.y = height;
+    }
+    
+    draw() {
+      ctx.globalAlpha = this.opacity;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      ctx.fillStyle = this.color;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+    }
+  }
+
+  function initParticles(num) {
+    particles.length = 0;
+    for (let i = 0; i < num; i++) {
+      particles.push(new Particle());
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, width, height);
+    particles.forEach((p) => {
+      p.move();
+      p.draw();
+    });
+    requestAnimationFrame(animate);
+  }
+
+  window.addEventListener("resize", () => {
+    resize();
+    initParticles(40);
+  });
+
+  resize();
+  initParticles(40);
+  animate();
+}
+
+// Eventos de teclado
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') {
+    closeModal();
+  }
+});
+
+document.getElementById('bookModal').addEventListener('click', function(e) {
+  if (e.target === this) {
+    closeModal();
+  }
+});
+
+// Preload de imágenes
+function preloadImages() {
+  books.forEach(book => {
+    const img = new Image();
+    img.src = book.cover;
+  });
+}
+
+// Iniciar preload
+preloadImages();
+</script>
+</body>
+</html>
